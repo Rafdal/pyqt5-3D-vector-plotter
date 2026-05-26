@@ -11,6 +11,7 @@ from frontend.pages.BlankPage import BlankPage
 from frontend.pages.ParamListExample import ParamListExample
 from frontend.pages.PlotPage import PlotPage
 from frontend.pages.Plot3DPage import Plot3DPage
+from frontend.pages.EMWavePage import EMWavePage
 
 import faulthandler
 
@@ -23,6 +24,7 @@ if __name__ == '__main__':
 
     # create pages
     pages = [
+        EMWavePage(),
         Plot3DPage(),
         DemoPage(),
         BlankPage(),

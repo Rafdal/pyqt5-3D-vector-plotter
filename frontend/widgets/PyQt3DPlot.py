@@ -65,6 +65,47 @@ class PyQt3DPlot(QWidget):
         else:
             self.items.append(line)
 
+    def plot_vectors(self, starts, ends, color=(1, 1, 1, 0.9), width=2, permanent=False):
+        """
+        Plot many independent line segments from starts[i] to ends[i] in one GL item.
+        starts and ends must be arrays with shape (N, 3).
+        """
+        starts = np.asarray(starts, dtype=np.float64)
+        ends = np.asarray(ends, dtype=np.float64)
+
+        if starts.shape != ends.shape or starts.ndim != 2 or starts.shape[1] != 3:
+            raise ValueError("starts and ends must have shape (N, 3)")
+        if starts.shape[0] == 0:
+            return
+
+        pos = np.empty((starts.shape[0] * 2, 3), dtype=np.float64)
+        pos[0::2] = starts
+        pos[1::2] = ends
+
+        line = gl.GLLinePlotItem()
+        line.setData(pos=pos, color=color, width=width, antialias=True, mode='lines')
+        if permanent:
+            self.permanent_items.append(line)
+        else:
+            self.items.append(line)
+
+    def plot_line_strip(self, points, color=(1, 1, 1, 0.9), width=2, permanent=False):
+        """
+        Plot a continuous 3D polyline from an array of points with shape (N, 3).
+        """
+        points = np.asarray(points, dtype=np.float64)
+        if points.ndim != 2 or points.shape[1] != 3:
+            raise ValueError("points must have shape (N, 3)")
+        if points.shape[0] < 2:
+            return
+
+        line = gl.GLLinePlotItem()
+        line.setData(pos=points, color=color, width=width, antialias=True, mode='line_strip')
+        if permanent:
+            self.permanent_items.append(line)
+        else:
+            self.items.append(line)
+
 
     def plot_axis(self, P0=np.identity(4), name="", length=10, permanent=True, fontsize=10):
         """

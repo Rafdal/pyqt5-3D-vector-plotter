@@ -53,7 +53,13 @@ class TextParam(ParameterBase):
 
 class NumParam(ParameterBase):
     """ Numerical parameter with interval and step"""
-    def __init__(self, name="x", interval=(0, 100), step=1, value=0, text="numerical parameter", default=None):
+    def __init__(self,
+                 name: str = "x",
+                 interval: typing.Tuple[float, float] = (0, 100),
+                 step: typing.Union[int, float] = 1,
+                 value: typing.Union[int, float] = 0,
+                 text: str = "numerical parameter",
+                 default: typing.Optional[typing.Union[int, float]] = None):
         super().__init__(name, text)
         self.type = "Number"
         self.interval = interval
@@ -101,7 +107,7 @@ class BoolParam(ParameterBase):
 
 class ParameterList():
     """ List of parameters with unique names"""
-    def __init__(self, paramList: typing.List[ParameterBase] = None):
+    def __init__(self, paramList: typing.Optional[typing.List[ParameterBase]] = None):
         self.internal_parameter_list = {}
 
         if paramList is None:
@@ -121,7 +127,7 @@ class ParameterList():
                 raise ValueError("All parameters must inherit ParameterBase")
             self.internal_parameter_list[p.name] = p
 
-    def addParameters(self, paramList: typing.List[ParameterBase]):
+    def addParameters(self, paramList: typing.Iterable[ParameterBase]):
         for p in paramList:
             self.addParameter(p)
 
