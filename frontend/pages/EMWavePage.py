@@ -21,7 +21,7 @@ class EMWavePage(BaseClassPage):
         self.paramList = ParameterList()
         self.paramList.addParameters([
             NumParam(name="t", text="time", default=0, step=1, interval=(0, 360)),
-            NumParam(name="z_max", text="z max", default=10, step=1, interval=(1, 80)),
+            NumParam(name="z_max", text="z max", default=0.1, step=0.1, interval=(0.1, 80)),
 
             NumParam(name="alpha_1", text="Wave 1 alpha (deg)", default=0, step=15, interval=(0, 360)),
 
@@ -45,7 +45,7 @@ class EMWavePage(BaseClassPage):
 
         self.plot3d_widget = PyQt3DPlot()
         self.plot3d_widget.add_grid(size=2)
-        self.plot3d_widget.plot_axis(name="", length=5, permanent=True)
+        # self.plot3d_widget.plot_axis(name="", length=5, permanent=True)
         self.plot3d_widget.w.setCameraPosition(distance=55, azimuth=45, elevation=18)
 
         self.polarization_widget = QWidget()
@@ -141,24 +141,25 @@ class EMWavePage(BaseClassPage):
         self.pol_ax.clear()
         self.pol_ax.axhline(0, color='0.4', linewidth=0.8)
         self.pol_ax.axvline(0, color='0.4', linewidth=0.8)
-        self.pol_ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.6)
-        self.pol_ax.set_xlabel('Ex')
-        self.pol_ax.set_ylabel('Ey')
-        self.pol_ax.set_title('Polarization Plane (x,y)')
+        # self.pol_ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.6)
+        # Display convention: horizontal axis is Y (right), vertical axis is X (up).
+        self.pol_ax.set_xlabel('Ey')
+        self.pol_ax.set_ylabel('Ex')
+        self.pol_ax.set_title('Polarization Plane (y right, x up, z in)')
 
-        self.pol_ax.plot(ex1_curve, ey1_curve, color=(1.0, 0.25, 0.25), linewidth=1.6, linestyle='--', label='Wave 1')
-        self.pol_ax.quiver(0, 0, ex1_now[0], ey1_now[0], angles='xy', scale_units='xy', scale=1,
-                           color=(1.0, 0.25, 0.25), width=0.007)
+        self.pol_ax.plot(ey1_curve, ex1_curve, color=(1.0, 0.0, 0.0), linewidth=1.6, linestyle='--', label='Wave 1')
+        self.pol_ax.quiver(0, 0, ey1_now[0], ex1_now[0], angles='xy', scale_units='xy', scale=1,
+                           color=(1.0, 0.0, 0.0), width=0.007)
 
         if self.paramList["show_w2"]:
-            self.pol_ax.plot(ex2_curve, ey2_curve, color=(0.2, 0.45, 1.0), linewidth=1.6, linestyle='--', label='Wave 2')
-            self.pol_ax.quiver(0, 0, ex2_now[0], ey2_now[0], angles='xy', scale_units='xy', scale=1,
-                               color=(0.2, 0.45, 1.0), width=0.007)
+            self.pol_ax.plot(ey2_curve, ex2_curve, color=(0, 1, 0), linewidth=1.6, linestyle='--', label='Wave 2')
+            self.pol_ax.quiver(0, 0, ey2_now[0], ex2_now[0], angles='xy', scale_units='xy', scale=1,
+                               color=(0.0, 1.0, 0.0), width=0.007)
 
         if self.paramList["show_sum"]:
-            self.pol_ax.plot(ex_sum_curve, ey_sum_curve, color=(1.0, 0.85, 0.2), linewidth=2.0, label='Sum')
-            self.pol_ax.quiver(0, 0, ex_sum_now[0], ey_sum_now[0], angles='xy', scale_units='xy', scale=1,
-                               color=(1.0, 0.72, 0.0), width=0.009)
+            self.pol_ax.plot(ey_sum_curve, ex_sum_curve, color=(0.0, 0.0, 1.0), linewidth=2.0, label='Sum')
+            self.pol_ax.quiver(0, 0, ey_sum_now[0], ex_sum_now[0], angles='xy', scale_units='xy', scale=1,
+                               color=(0.0, 0.0, 1.0), width=0.009)
 
         max_abs = np.max(np.abs(np.concatenate([
             ex1_curve, ey1_curve,
@@ -198,15 +199,15 @@ class EMWavePage(BaseClassPage):
             z_values=z_values,
         )
 
-        self._plot_signal(ex1, ey1, z_values, color=(1.0, 0.25, 0.25, 0.9), width_line=2, width_vector=3)
+        self._plot_signal(ex1, ey1, z_values, color=(1.0, 0.0, 0.0, 1.0), width_line=2, width_vector=3)
 
         if self.paramList["show_w2"]:
-            self._plot_signal(ex2, ey2, z_values, color=(0.2, 0.45, 1.0, 0.9), width_line=2, width_vector=3)
+            self._plot_signal(ex2, ey2, z_values, color=(0.0, 1.0, 0.0, 1.0), width_line=2, width_vector=3)
 
         if self.paramList["show_sum"]:
             ex_sum = ex1 + ex2
             ey_sum = ey1 + ey2
-            self._plot_signal(ex_sum, ey_sum, z_values, color=(1.0, 0.85, 0.2, 0.95), width_line=3, width_vector=4)
+            self._plot_signal(ex_sum, ey_sum, z_values, color=(1.0, 1.0, 0.0, 1.0), width_line=3, width_vector=4)
 
         self.plot3d_widget.show()
         self._plot_polarization_xy(t)
